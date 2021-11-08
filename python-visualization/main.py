@@ -1,7 +1,15 @@
 import matplotlib.pyplot as plt
 import soundfile as sf
+import os
 
-data, sample_rate = sf.read('audio/2021-10-23T19-25-59Z.wav', dtype='float32')
+FILE_NAME = '2021-10-23T19-25-59Z.wav'
+THIS_DIR = 'python-visualization'
+AUDIO_DIR = 'audio'
+
+path = os.path.dirname(__file__)
+path = path.replace(THIS_DIR, AUDIO_DIR)
+os.chdir(path)
+data, sample_rate = sf.read(FILE_NAME, dtype='float32')
 
 num_samples, num_channels = data.shape
 print("samples ", num_samples, "channels ", num_channels)
