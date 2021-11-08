@@ -22,4 +22,9 @@ for channel in range(0, num_channels):
     plt.ylabel("Sound Pressure")
     plt.show()
 
+plt.plot(data)
+plt.xlabel("Time")
+plt.ylabel("Sound Pressure")
+plt.show()
+
 
