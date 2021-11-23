@@ -41,3 +41,9 @@ room.compute_rir()
 # PLOT RIR BETWEEN MIC 1 AND SOURCE 0
 plt.plot(room.rir[1][0])
 plt.show()
+
+# CONVOLVE RIR AND SOURCES
+room.simulate()
+
+# plot signal at microphone 1
+plt.plot(room.mic_array.signals[1, :])
