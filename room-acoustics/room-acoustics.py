@@ -5,9 +5,27 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
+# FILE CONFIGURATIONS
 CURRENT_DIR = 'room-acoustics'
 AUDIO_DIR = 'audio'
 FILE_NAME = '8,1640_StaatermanE-2018_Amphichthys-cryptocentrus_Boop-Grunt-Swoop.wav'
+
+# ROOM CONFIGURATIONS
+SENSOR_DELTA = 0.317873
+SQUARE_DELTA = [
+    [0, 0, -SENSOR_DELTA],
+    [0, 0, SENSOR_DELTA],
+    [-SENSOR_DELTA, 0, 0],
+    [SENSOR_DELTA, 0, 0]
+]
+ROOM_HEIGHT = 11.35
+ROOM_WIDTH = 100
+ORIGIN = [ROOM_WIDTH/2, 0, ROOM_WIDTH/2]
+
+# Used to convert relative position to global position
+def center_on_origin(origin, point):
+    return [a+b for a, b in zip(origin, point)]
+
 
 # LOAD AUDIO SOURCE
 data_dir = pjoin(dirname(__file__), 'dataverse_files', 'Recordings').replace(CURRENT_DIR, AUDIO_DIR)
@@ -18,10 +36,8 @@ plt.plot(audio) # Audio before simulation
 plt.show()
 
 # ROOM SETUP
-HEIGHT = 11.35
-WIDTH = 100
 rt60 = 1.0  # seconds, reverb time
-room_dim = [WIDTH, HEIGHT, WIDTH]  # meters, room dimensions
+room_dim = [ROOM_WIDTH, ROOM_HEIGHT, ROOM_WIDTH]  # meters, room dimensions
 
 e_absorption, max_order = pra.inverse_sabine(rt60, room_dim) # We invert Sabine's formula to obtain the parameters for the ISM simulator
 
@@ -31,21 +47,12 @@ room = pra.ShoeBox(
 )
 
 # PLACE SOURCE IN ROOM
-origin = [WIDTH/2, 0, WIDTH/2]
 room.add_source([2.5, 3.73, 1.76], signal=audio, delay=1.3)
 
 # CONFIGURE SENSOR ARRAY
-SENSOR_DELTA = 0.317873
-SQUARE_DELTA = [
-    [0, 0, -SENSOR_DELTA],
-    [0, 0, SENSOR_DELTA],
-    [-SENSOR_DELTA, 0, 0],
-    [SENSOR_DELTA, 0, 0]
-]
-
-square_array = []
-for sensor in SQUARE_DELTA:
-    square_array.append([a + b for a, b in zip(origin, sensor)])
+square_array = [center_on_origin(ORIGIN, sensor) for sensor in SQUARE_DELTA]
+# for sensor in SQUARE_DELTA:
+#     square_array.append([a + b for a, b in zip(origin, sensor)])
 
 mic_locs = np.c_[
     square_array[0],  # mic 1
@@ -74,10 +81,11 @@ plt.plot(room.mic_array.signals[2, :])
 plt.plot(room.mic_array.signals[3, :])
 plt.show()
 
-
 # WRITE TO WAV FILE
 room.mic_array.to_wav(
     f"output/fishsound_{time.time()}.wav",
     norm=True,
     bitdepth=np.float32
 )
+
+
