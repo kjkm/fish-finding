@@ -22,6 +22,7 @@ ROOM_HEIGHT = 11.35
 ROOM_WIDTH = 100
 ORIGIN = [ROOM_WIDTH/2, 0, ROOM_WIDTH/2]
 
+
 # Used to convert relative position to global position
 def center_on_origin(origin, point):
     return [a+b for a, b in zip(origin, point)]
@@ -39,11 +40,11 @@ plt.show()
 rt60 = 1.0  # seconds, reverb time
 room_dim = [ROOM_WIDTH, ROOM_HEIGHT, ROOM_WIDTH]  # meters, room dimensions
 
-e_absorption, max_order = pra.inverse_sabine(rt60, room_dim) # We invert Sabine's formula to obtain the parameters for the ISM simulator
+e_absorption, max_order = pra.inverse_sabine(rt60, room_dim)
 
 print(max_order)
 room = pra.ShoeBox(
-    room_dim, fs=samplerate, materials=pra.Material(e_absorption), max_order=10 # Create the room, hardcoded a lower reflection order
+    room_dim, fs=samplerate, materials=pra.Material(e_absorption), max_order=10 # hardcoded a lower reflection order
 )
 
 # PLACE SOURCE IN ROOM
@@ -51,8 +52,6 @@ room.add_source([2.5, 3.73, 1.76], signal=audio, delay=1.3)
 
 # CONFIGURE SENSOR ARRAY
 square_array = [center_on_origin(ORIGIN, sensor) for sensor in SQUARE_DELTA]
-# for sensor in SQUARE_DELTA:
-#     square_array.append([a + b for a, b in zip(origin, sensor)])
 
 mic_locs = np.c_[
     square_array[0],  # mic 1
