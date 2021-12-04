@@ -8,6 +8,7 @@ import time
 # FILE CONFIGURATIONS
 CURRENT_DIR = 'room-acoustics'
 AUDIO_DIR = 'audio'
+AUDIO_SUB_DIRS = []
 FILE_NAME = '8,1640_StaatermanE-2018_Amphichthys-cryptocentrus_Boop-Grunt-Swoop.wav'
 
 # ROOM CONFIGURATIONS
@@ -24,7 +25,7 @@ ORIGIN = [ROOM_WIDTH/2, 0, ROOM_WIDTH/2]
 
 
 # Used to convert relative position to global position
-def center_on_origin(origin, point):
+def center_on_origin(origin: list[int], point: list[int]) -> list[int]:
     return [a+b for a, b in zip(origin, point)]
 
 
@@ -74,8 +75,12 @@ plt.show()
 room.simulate()
 
 # PLOT SIGNALS
-plt.plot(room.mic_array.signals[1, :])
+for channel in room.mic_array.signals:
+    plt.plot(channel)
+    plt.show()
+
 plt.plot(room.mic_array.signals[0, :])
+plt.plot(room.mic_array.signals[1, :])
 plt.plot(room.mic_array.signals[2, :])
 plt.plot(room.mic_array.signals[3, :])
 plt.show()
