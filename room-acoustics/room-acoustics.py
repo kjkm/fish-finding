@@ -24,8 +24,10 @@ ROOM_WIDTH = 100
 ORIGIN = [ROOM_WIDTH/2, 0, ROOM_WIDTH/2]
 
 
-# Used to convert relative position to global position
-def center_on_origin(origin: list[int], point: list[int]) -> list[int]:
+# Given an origin point expressed in global coordinates and a point expressed in local coordinates, convert the point to
+# global coordinates, relative to the origin. The origin and point should exist within the same coordinate system ie
+# be lists of equal length.
+def center_point_on_origin(origin: list[int], point: list[int]) -> list[int]:
     return [a+b for a, b in zip(origin, point)]
 
 
@@ -52,7 +54,7 @@ room = pra.ShoeBox(
 room.add_source([2.5, 3.73, 1.76], signal=audio, delay=1.3)
 
 # CONFIGURE SENSOR ARRAY
-square_array = [center_on_origin(ORIGIN, sensor) for sensor in SQUARE_DELTA]
+square_array = [center_point_on_origin(ORIGIN, sensor) for sensor in SQUARE_DELTA]
 
 mic_locs = np.c_[
     square_array[0],  # mic 1
