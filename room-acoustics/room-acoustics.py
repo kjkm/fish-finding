@@ -55,11 +55,14 @@ def generate_wav(room: pra.Room, filename: str, output_path: str, source_locatio
     )
 
 
+# Streamlines the whole directory management kerfuffle
 def get_path(filename: str) -> str:
     data_dir = pjoin(dirname(__file__), 'dataverse_files', 'Recordings').replace(CURRENT_DIR, AUDIO_DIR)
+    # TODO: Find a way to make it so that 'dataverse-files' and 'Recordings' can be moved up top to be config variables
     return pjoin(data_dir, filename)
 
 
+# TODO: After configuring room, call generate_wav for every sound in the data set at several random different locs. 
 def main():
     samplerate, audio = wavfile.read(get_path(FILE_NAME))
     # TODO: input file is currently read in here, because we need the samplerate, and also in the generate_wav function
@@ -79,7 +82,7 @@ def main():
     # Add sensor array to room
     room.add_microphone_array(sensor_locations)
 
-    #Generate WAV file
+    # Generate WAV file
     location = [2.5, 3.73, 1.76]
     generate_wav(room, get_path(FILE_NAME), f"output/generated{time.time()}.wav", location)
 
