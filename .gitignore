@@ -1,8 +1,11 @@
+# Ignore files related to audio data sets and their metadata
 *.wav
 *.zip
-.idea/
 *.csv
 *.png
 *.xlsx
 *.docx
 MANIFEST.TXT
+
+# Ignore ide stuff
+.idea/
