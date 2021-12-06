@@ -1,4 +1,3 @@
-import pyroomacoustics
 import pyroomacoustics as pra
 from os.path import dirname, join as pjoin
 from scipy.io import wavfile
@@ -9,7 +8,6 @@ import time
 # FILE CONFIGURATIONS
 CURRENT_DIR = 'room-acoustics'
 AUDIO_DIR = 'audio'
-AUDIO_SUB_DIRS = []
 FILE_NAME = '8,1640_StaatermanE-2018_Amphichthys-cryptocentrus_Boop-Grunt-Swoop.wav'
 
 # ROOM CONFIGURATIONS
