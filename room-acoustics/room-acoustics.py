@@ -40,7 +40,13 @@ def plot(data: list[np.ndarray]):
 
 # Accepts a room, a source file, an output path, a location, and an optional delay and saves a reverberant
 # transformation of the source signal to a wav file in the specified location.
-def generate_wav(room: pra.Room, filename: str, output_path: str, source_location: list[int], source_delay: float = 1.3):
+def generate_wav(
+                    room: pra.Room,
+                    filename: str,
+                    output_path: str,
+                    source_location: list[int],
+                    source_delay: float = 1.3
+                 ):
     sample_rate, data = wavfile.read(filename)
     plot(data) # Plot source signal before transformation
     room.add_source(source_location, signal=data, delay=source_delay)
@@ -62,7 +68,7 @@ def get_path(filename: str) -> str:
     return pjoin(data_dir, filename)
 
 
-# TODO: After configuring room, call generate_wav for every sound in the data set at several random different locs. 
+# TODO: After configuring room, call generate_wav for every sound in the data set at several random different locs.
 def main():
     samplerate, audio = wavfile.read(get_path(FILE_NAME))
     # TODO: input file is currently read in here, because we need the samplerate, and also in the generate_wav function
