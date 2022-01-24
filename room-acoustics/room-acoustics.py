@@ -4,6 +4,7 @@ from scipy.io import wavfile
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import samplerate
 
 # FILE CONFIGURATIONS
 CURRENT_DIR = 'room-acoustics'
@@ -19,7 +20,7 @@ SQUARE_DELTA = [
     [SENSOR_DELTA, 0, 0]
 ]
 ROOM_HEIGHT = 11.35
-ROOM_WIDTH = 100
+ROOM_WIDTH = 100.0
 ORIGIN = [ROOM_WIDTH/2, 0, ROOM_WIDTH/2]
 
 
@@ -36,29 +37,6 @@ def plot(data: list[np.ndarray]):
     plt.show()
 
 
-# Accepts a room, a source file, an output path, a location, and an optional delay and saves a reverberant
-# transformation of the source signal to a wav file in the specified location.
-def generate_wav(
-                    room: pra.Room,
-                    filename: str,
-                    output_path: str,
-                    source_location: list[int],
-                    source_delay: float = 1.3
-                 ):
-    sample_rate, data = wavfile.read(filename)
-    plot(data) # Plot source signal before transformation
-    room.add_source(source_location, signal=data, delay=source_delay)
-    room.compute_rir()
-    plot(room.rir[1][0]) # Plot RIR between Mic 1 and Src 0
-    room.simulate()
-    # TODO: Plot source signal after it gets convolved with the RIR
-    room.mic_array.to_wav(
-        output_path,
-        norm=True,
-        bitdepth=np.float32,
-    )
-
-
 # Streamlines the whole directory management kerfuffle
 def get_path(filename: str) -> str:
     data_dir = pjoin(dirname(__file__), 'dataverse_files', 'Recordings').replace(CURRENT_DIR, AUDIO_DIR)
@@ -66,17 +44,21 @@ def get_path(filename: str) -> str:
     return pjoin(data_dir, filename)
 
 
-# TODO: After configuring room, call generate_wav for every sound in the data set at several random different locs.
-def main():
-    samplerate, audio = wavfile.read(get_path(FILE_NAME))
-    # TODO: input file is currently read in here, because we need the samplerate, and also in the generate_wav function
+# Generates a wav file from a given room configuration at a given location
+def generate_wav(file: str, output_path: str, reverb: float, dims: tuple[float, float, float], source: tuple[float, float, float], delay: float = 1.3):
+    samplerate, audio = wavfile.read(get_path(file))
+
+    plot(audio)  # Plot source signal before transformation
 
     # Configure room
-    rt60 = 1.0  # seconds, reverb time
-    room_dim = [ROOM_WIDTH, ROOM_HEIGHT, ROOM_WIDTH]  # meters, room dimensions
+    rt60 = reverb  # seconds, reverb time
+    room_dim = [dims[0], dims[1], dims[2]]  # meters, room dimensions
     e_absorption, max_order = pra.inverse_sabine(rt60, room_dim)
     room = pra.ShoeBox(
-        room_dim, fs=samplerate, materials=pra.Material(e_absorption), max_order=10 # hardcoded a lower reflection order
+        room_dim,
+        fs=samplerate,
+        materials=pra.Material(e_absorption),
+        max_order=10  # hardcoded a lower reflection order
     )
 
     # Configure sensor array
@@ -87,8 +69,32 @@ def main():
     room.add_microphone_array(sensor_locations)
 
     # Generate WAV file
-    location = [2.5, 3.73, 1.76]
-    generate_wav(room, get_path(FILE_NAME), f"output/generated{time.time()}.wav", location)
+    room.fs = samplerate
+    room.add_source([source[0], source[1], source[2]], signal=audio, delay=delay)
+    room.compute_rir()
+
+    plot(room.rir[1][0])  # Plot RIR between Mic 1 and Src 0
+
+    room.simulate()
+    room.mic_array.to_wav(
+        output_path,
+        norm=True,
+        bitdepth=np.float32,
+    )
+
+
+# TODO: After configuring room, call generate_wav for every sound in the data set at several random different locs.
+def main():
+    # Generate WAV file
+    source_loc = (2.5, 3.73, 1.76)
+
+    generate_wav(
+        FILE_NAME,
+        f"output/generated{time.time()}.wav",
+        1.0,
+        (ROOM_WIDTH, ROOM_HEIGHT, ROOM_WIDTH),
+        source_loc
+    )
 
 
 if __name__ == "__main__":
