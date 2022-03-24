@@ -1,3 +1,4 @@
+from tkinter import CURRENT
 import pyroomacoustics as pra
 from os.path import dirname, join as pjoin
 from scipy.io import wavfile
@@ -8,7 +9,7 @@ import samplerate
 
 # FILE CONFIGURATIONS
 CURRENT_DIR = 'room-acoustics'
-AUDIO_DIR = 'audio'
+AUDIO_DIR = 'audio/dataverse_files/Recordings'
 FILE_NAME = '8,1640_StaatermanE-2018_Amphichthys-cryptocentrus_Boop-Grunt-Swoop.wav'
 
 # ROOM CONFIGURATIONS
@@ -37,11 +38,9 @@ def plot(data: list[np.ndarray]):
     plt.show()
 
 
-# Streamlines the whole directory management kerfuffle
+# Returns filepath of given filename
 def get_path(filename: str) -> str:
-    data_dir = pjoin(dirname(__file__), 'dataverse_files', 'Recordings').replace(CURRENT_DIR, AUDIO_DIR)
-    # TODO: Find a way to make it so that 'dataverse-files' and 'Recordings' can be moved up top to be config variables
-    return pjoin(data_dir, filename)
+    return pjoin(dirname(__file__).replace(CURRENT_DIR, AUDIO_DIR), filename)
 
 
 # Generates a wav file from a given room configuration at a given location

@@ -1,14 +1,15 @@
 import matplotlib.pyplot as plt
 import soundfile as sf
-import os
+from os import chdir
+from os.path import dirname, join as pjoin
 
+# FILE CONFIGURATIONS
 FILE_NAME = '2021-10-23T19-25-59Z.wav'
-THIS_DIR = 'python-visualization'
 AUDIO_DIR = 'audio'
+# Changes directory from /python-visualization into /audio
+chdir(pjoin(dirname(__file__), AUDIO_DIR))
 
-path = os.path.dirname(__file__)
-path = path.replace(THIS_DIR, AUDIO_DIR)
-os.chdir(path)
+
 data, sample_rate = sf.read(FILE_NAME, dtype='float32')
 
 num_samples, num_channels = data.shape
