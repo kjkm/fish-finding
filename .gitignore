@@ -9,3 +9,6 @@ MANIFEST.TXT
 
 # Ignore ide stuff
 .idea/
+
+# Ignore compiled stuff
+__pycache__/
