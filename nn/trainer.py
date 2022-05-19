@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
-from FilterBankNet import Filter_bank_net
+from NeuralNetwork import Neural_net
 
 class Trainer(nn.Module):
     def __init__(self):
         super().__init__()
-        self.my_filter_bank = Filter_bank_net(1024)
+        self.my_filter_bank = Neural_net(1024)
 
 if __name__ == "__main__":
     my_trainer = Trainer()

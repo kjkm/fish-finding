@@ -1,11 +1,11 @@
 import torch.nn as nn
 import torch
 
-class Filter_bank_net(nn.Module):
+class Neural_net(nn.Module):
 
     def __init__(self, input_length):
         filter_size = 3
-        super(Filter_bank_net, self).__init__()
+        super(Neural_net, self).__init__()
         self.input_length = input_length
         self.filters = 128
 
@@ -34,9 +34,11 @@ class Filter_bank_net(nn.Module):
         self.dsac_6 = nn.Sequential(self.depth_conv_6, self.point_conv_generic)
 
         self.tan_h = nn.Tanh()
+        self.selu = nn.SELU()
 
         self.first_normalization = nn.LayerNorm([self.filters, self.input_length])
         self.normalization_layer = nn.LayerNorm([2 * self.filters, self.input_length])
+        self.energy_normalization_layer = nn.LayerNorm([2 * self.filters, 961])
 
         self.average_pool = nn.AvgPool1d(2)
 
@@ -81,9 +83,13 @@ class Filter_bank_net(nn.Module):
         square = torch.square(tan_h6)
         avg = self.average_pool(square[:, :, 30:991])
 
-        # TODO: Make these do something
-        energy_layer_norm = 0
-        selu = 0
+        energy_layer_norm = self.energy_normalization_layer(avg)
+        
+        selu = self.selu(energy_layer_norm)
+
+        # Flatten the last three layers
+
+        # Pare down to n number of outputs (10)?
 
         return tan_h6
 
