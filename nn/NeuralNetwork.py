@@ -2,7 +2,6 @@ import torch.nn as nn
 import torch
 
 class Neural_net(nn.Module):
-
     def __init__(self, input_length):
         filter_size = 3
         super(Neural_net, self).__init__()
@@ -38,9 +37,11 @@ class Neural_net(nn.Module):
 
         self.first_normalization = nn.LayerNorm([self.filters, self.input_length])
         self.normalization_layer = nn.LayerNorm([2 * self.filters, self.input_length])
-        self.energy_normalization_layer = nn.LayerNorm([2 * self.filters, 961])
+        self.energy_normalization_layer = nn.LayerNorm([2 * self.filters, 480])
 
         self.average_pool = nn.AvgPool1d(2)
+
+        self.fully_connected = nn.Linear(122880, 10)
 
 
     def forward(self, nn_input):
@@ -88,9 +89,11 @@ class Neural_net(nn.Module):
         selu = self.selu(energy_layer_norm)
 
         # Flatten the last three layers
+        flat = torch.flatten(selu)
 
         # Pare down to n number of outputs (10)?
+        connected = self.fully_connected(flat)
 
-        return tan_h6
+        return connected
 
 
